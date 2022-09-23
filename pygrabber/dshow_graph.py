@@ -134,9 +134,15 @@ class VideoInput(Filter):
             if GUID(FormatTypes.FORMAT_VideoInfo) == media_type.contents.formattype:
                 p_video_info_header = cast(media_type.contents.pbFormat, POINTER(VIDEOINFOHEADER))
                 bmp_header = p_video_info_header.contents.bmi_header
+                subtype = str(media_type.contents.subtype)
+                if subtype[0] == "{" and subtype[-1] == "}":
+                    subtype = subtype[1:-1]
+                type_name = "UNKN"
+                if subtype in subtypes:
+                    type_name = subtypes[subtype]
                 result.append({
                     'index': i,
-                    'media_type_str': subtypes[str(media_type.contents.subtype)],
+                    'media_type_str': type_name,
                     'width': bmp_header.biWidth,
                     'height': bmp_header.biHeight,
                     'min_framerate': 10000000 / capability.MinFrameInterval,
